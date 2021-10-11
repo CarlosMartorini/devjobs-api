@@ -1,7 +1,11 @@
 from flask import current_app, request, jsonify
+from flask_jwt_extended.utils import create_access_token
+
 from app.models.company_model import CompanyModel
+
+from sqlalchemy.exc import IntegrityError, NoResultFound
 from psycopg2.errors import UniqueViolation
-from sqlalchemy.exc import IntegrityError
+from app.exc.company_exc import InvalidPasswordError
 
 
 VALID_KEYS = ['email', 'company_name', 'password']
@@ -36,3 +40,25 @@ def create_company():
             'invalid_key': invalid_key,
             'valid_keys': VALID_KEYS
         }, 400
+
+
+def login():
+    try:
+
+        data = request.get_json()
+
+        company: CompanyModel = CompanyModel.query.filter_by(email=data['email']).one()
+
+        company.verify_password(data['password'])
+
+        return {"access_token": create_access_token(company)}
+
+    except InvalidPasswordError as e:
+        return {"msg": e.message}, 401
+
+    except KeyError as e:
+        key = e.args[0].split(' ')[0]
+        return {'msg': f'key {key} is not found'}, 400
+
+    except NoResultFound:
+        return {'msg': f'User with email {data["email"]} is not found'}, 404
