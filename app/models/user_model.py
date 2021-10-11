@@ -8,7 +8,7 @@ class UserModel(db.Model):
 
     id: int
     email: str
-    password: str
+    password_hash: str
     first_name: str
     last_name: str
     birth_date: str
@@ -20,7 +20,7 @@ class UserModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), nullable=False, unique=True)
-    password = db.Column(db.String(127), nullable=False)
+    password_hash = db.Column(db.String(127), nullable=False)
     first_name = db.Column(db.String(255), nullable=False)
     last_name = db.Column(db.String(255), nullable=False)
     birth_date = db.Column(db.Date(), nullable=False)
@@ -34,7 +34,7 @@ class UserModel(db.Model):
 
     @password.setter
     def password(self, password_to_hash):
-        self.password = generate_password_hash(password_to_hash)
+        self.password_hash = generate_password_hash(password_to_hash)
 
-    def verify_password(self, password_to_comapre):
-        return check_password_hash(self.password, password_to_comapre)
+    def verify_password(self, password_to_compare):
+        return check_password_hash(self.password_hash, password_to_compare)

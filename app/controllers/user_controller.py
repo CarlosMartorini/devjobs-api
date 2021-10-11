@@ -1,6 +1,6 @@
 from flask import request, jsonify, current_app
 from app.models.user_model import UserModel
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required
 
 
 def create_user():
@@ -8,7 +8,11 @@ def create_user():
 
     data = request.get_json()
 
+    password_to_hash = data.pop('password_hash')
+
     new_user = UserModel(**data)
+
+    new_user.password = password_to_hash
 
     session.add(new_user)
     session.commit()
@@ -24,7 +28,7 @@ def login():
     if not found_user:
         return {'error': 'User not found!'}, 404
 
-    if found_user.verify_password(data['password']):
+    if found_user.verify_password(data['password_hash']):
         access_token = create_access_token(identity=found_user)
 
         return{
@@ -40,8 +44,12 @@ def update_user():
     ...
 
 
+@jwt_required()
 def get_user(id: int):
     user = UserModel.query.get(id)
+
+    if not user:
+        return {'message': 'User not founded!'}, 404
 
     return jsonify(user), 200
 
