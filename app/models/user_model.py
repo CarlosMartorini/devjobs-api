@@ -1,5 +1,6 @@
 from app.configs.database import db
 from dataclasses import dataclass
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 @dataclass
@@ -15,7 +16,7 @@ class UserModel(db.Model):
     address: str
     phone: str
 
-    __tabelname__ = "users"
+    __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), nullable=False, unique=True)
@@ -26,3 +27,14 @@ class UserModel(db.Model):
     linkedin_profile = db.Column(db.String(127), nullable=False)
     address = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(255), nullable=False)
+
+    @property
+    def password(self):
+        raise AttributeError('Password cannot be accessed!')
+
+    @password.setter
+    def password(self, password_to_hash):
+        self.password = generate_password_hash(password_to_hash)
+
+    def verify_password(self, password_to_comapre):
+        return check_password_hash(self.password, password_to_comapre)
