@@ -4,7 +4,7 @@ from flask_jwt_extended.utils import create_access_token
 from app.models.company_model import CompanyModel
 
 from sqlalchemy.exc import IntegrityError, NoResultFound
-from psycopg2.errors import UniqueViolation
+from psycopg2.errors import NotNullViolation, UniqueViolation
 from app.exc.company_exc import InvalidPasswordError
 
 
@@ -28,9 +28,14 @@ def create_company():
         return jsonify(company), 201
 
     except IntegrityError as e:
-
         if type(e.orig) == UniqueViolation:
             return {'msg': 'Email already exists!'}, 409
+
+        if type(e.orig) == NotNullViolation:
+            doble_quote = '"'
+            single_quote = "'"
+            invalid_key = e.args[0].split(' ')[5].replace(doble_quote, single_quote)
+            return {'msg': f'Key {invalid_key} not found'}, 400
 
     except TypeError as e:
         single_quote = "'"
@@ -40,6 +45,9 @@ def create_company():
             'invalid_key': invalid_key,
             'valid_keys': VALID_KEYS
         }, 400
+
+    except KeyError:
+        return {"msg": "Key 'password' not found"}, 400
 
 
 def login():
