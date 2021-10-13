@@ -7,4 +7,4 @@ bp = Blueprint('summary_bp', __name__, url_prefix='/summary')
 
 bp.post('')(create_summary)
 bp.patch('')(update_summary)
-bp.get('/<int:id>')(get_summary)
+bp.get('')(get_summary)

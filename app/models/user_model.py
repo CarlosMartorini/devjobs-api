@@ -28,6 +28,8 @@ class UserModel(db.Model):
     address = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(255), nullable=False)
 
+    summary = db.relationship('SummaryModel', back_populates='user', uselist=False)
+
     @property
     def password(self):
         raise AttributeError('Password cannot be accessed!')

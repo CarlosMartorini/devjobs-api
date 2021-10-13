@@ -1,3 +1,4 @@
+from sqlalchemy.orm import backref
 from app.configs.database import db
 from dataclasses import dataclass
 
@@ -22,4 +23,5 @@ class SummaryModel(db.Model):
     disponibility = db.Column(db.String(255), nullable=False)
     experience_time = db.Column(db.Integer, nullable=False)
 
-    # TODO: user_id
+    user = db.relationship('UserModel', backref=db.backref('summary', useList=False))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
