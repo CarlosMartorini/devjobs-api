@@ -26,7 +26,7 @@ def create_summary():
             if data[item] == "":
                 return {'error': f'Key {item} is empty!'}, 400
 
-        data['user_id'] = user.id
+        data['user_id'] = user['id']
 
         new_summary = SummaryModel(**data)
 
@@ -75,7 +75,9 @@ def update_summary():
 
 @jwt_required()
 def get_summary():
-    summary = get_jwt_identity()
+    user = get_jwt_identity()
+
+    summary = SummaryModel.query.filter_by(user_id=user['id']).first()
 
     if not summary:
         return {'error': 'Summary not found!'}, 404
