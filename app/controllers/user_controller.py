@@ -7,7 +7,7 @@ from psycopg2.errors import UniqueViolation, NotNullViolation
 
 VALID_KEYS = [
     'email',
-    'password_hash',
+    'password',
     'first_name',
     'last_name',
     'birth_date',
@@ -16,7 +16,7 @@ VALID_KEYS = [
     'phone'
 ]
 
-LOGIN_KEYS = ['email', 'password_hash']
+LOGIN_KEYS = ['email', 'password']
 
 
 def create_user():
@@ -29,7 +29,7 @@ def create_user():
             if data[item] == "":
                 return {'error': f'Key {item} is empty!'}, 400
 
-        password_to_hash = data.pop('password_hash')
+        password_to_hash = data.pop('password')
 
         new_user = UserModel(**data)
 
@@ -71,7 +71,7 @@ def login():
         if not found_user:
             return {'error': 'User not found!'}, 404
 
-        if found_user.verify_password(data['password_hash']):
+        if found_user.verify_password(data['password']):
             access_token = create_access_token(identity=found_user)
 
             return{

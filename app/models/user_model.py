@@ -8,7 +8,6 @@ class UserModel(db.Model):
 
     id: int
     email: str
-    password_hash: str
     first_name: str
     last_name: str
     birth_date: str
