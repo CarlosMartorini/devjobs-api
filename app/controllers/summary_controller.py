@@ -62,7 +62,9 @@ def update_summary():
         if not updated_summary:
             return {'error': 'Summary not found!'}, 404
 
-        return {'summary_update': updated_summary}, 200
+        output_summary = SummaryModel.query.filter_by(user_id=updated_summary['id']).first()
+
+        return {'summary_update': output_summary}, 200
 
     except TypeError as e:
         invalid_key = e.args[0].split(' ')[0].strip("'")
