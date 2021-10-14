@@ -1,4 +1,3 @@
-from sqlalchemy.orm import backref
 from app.configs.database import db
 from dataclasses import dataclass
 

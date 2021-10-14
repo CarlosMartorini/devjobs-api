@@ -1,8 +1,7 @@
 from app.configs.database import db
 from dataclasses import dataclass
-import psycopg2
-from sqlalchemy.exc import IntegrityError
 from flask import current_app
+
 
 @dataclass
 class ExperienceModel(db.Model):
@@ -17,7 +16,6 @@ class ExperienceModel(db.Model):
 
     __tablename__ = "experience"
 
-
     id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(255), nullable=False)
     company = db.Column(db.String(255), nullable=False)
@@ -30,12 +28,12 @@ class ExperienceModel(db.Model):
     @staticmethod
     def create_one(data):
         new_entry = {
-            "user_id" : data["userId"],
-            "role" : data["role"], 
-            "company" : data["company"],
-            "date_from" : data["dateFrom"],
-            "date_to" : data["dateTo"], 
-            "description" : data["description"]
+            "user_id": data["userId"],
+            "role": data["role"],
+            "company": data["company"],
+            "date_from": data["dateFrom"],
+            "date_to": data["dateTo"],
+            "description": data["description"]
         }
 
         session = current_app.db.session
@@ -44,10 +42,9 @@ class ExperienceModel(db.Model):
         session.add(experience)
         session.commit()
 
-
         return {
-                "role" : new_entry["role"],
-                "company" : new_entry["company"],
+                "role": new_entry["role"],
+                "company": new_entry["company"],
                 "date_from": new_entry["date_from"],
                 "date_to": new_entry["date_to"],
-                "description" : new_entry["description"]}
+                "description": new_entry["description"]}
