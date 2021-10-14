@@ -3,7 +3,7 @@ from app.models.education_model import EducationModel as EM
 from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import NoResultFound
 
-
+@jwt_required()
 def get_education():
 
     user_id = int(request.args.get('userId'))
@@ -18,6 +18,7 @@ def get_education():
     return jsonify(education), 200
 
 
+@jwt_required()
 def create_education():
 
     data = request.get_json()
@@ -35,15 +36,12 @@ def create_education():
     except KeyError:
         data["dateTo"] = None
 
-    education = EM.create_one(data)
+    EM.create_one(data)
 
-    if education == "education exists":
-
-        return {"error" :  "education already exists"}, 409
-    
     return jsonify({"msg" : "created"} ), 201
 
 
+@jwt_required()
 def delete_education(education_id):
 
     education = EM.query.get(education_id)
