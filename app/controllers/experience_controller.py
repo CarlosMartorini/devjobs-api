@@ -22,7 +22,6 @@ def create_experience():
 
     data = request.get_json()
 
-
     try:
         data["dateFrom"]
 
@@ -35,11 +34,7 @@ def create_experience():
     except KeyError:
         data["dateTo"] = None
 
-    experience = EXM.create_one(data)
-
-    if experience == "exeperience exists":
-
-        return {"error" :  "experience already exists"}, 409
+    EXM.create_one(data)
     
     return jsonify({"msg" : "created"} ), 201
 
