@@ -9,7 +9,6 @@ VALID_KEYS = [
     'speciality',
     'disponibility',
     'experience_time',
-    'user_id'
 ]
 
 
@@ -41,7 +40,7 @@ def create_summary():
         return {
             'invalid_key': invalid_key,
             'valid_keys': VALID_KEYS
-        }
+        }, 400
 
 
 @jwt_required()
@@ -51,18 +50,13 @@ def update_summary():
     try:
         data = request.get_json()
 
-        summary = get_jwt_identity()
+        user = get_jwt_identity()
 
-        SummaryModel.query.filter(SummaryModel.id == summary['id']).update(data)
+        SummaryModel.query.filter(SummaryModel.user_id == user['id']).update(data)
 
         session.commit()
 
-        updated_summary = get_jwt_identity()
-
-        if not updated_summary:
-            return {'error': 'Summary not found!'}, 404
-
-        output_summary = SummaryModel.query.filter_by(user_id=updated_summary['id']).first()
+        output_summary = SummaryModel.query.filter_by(user_id=user['id']).first()
 
         return {'summary_update': output_summary}, 200
 
@@ -72,7 +66,7 @@ def update_summary():
         return {
             'invalid_key': invalid_key,
             'valid_keys': VALID_KEYS
-        }
+        }, 400
 
 
 @jwt_required()
