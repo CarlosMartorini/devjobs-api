@@ -5,22 +5,22 @@ from sqlalchemy.exc import IntegrityError
 from flask import current_app
 
 @dataclass
-class EducationModel(db.Model):
+class ExperienceModel(db.Model):
 
     id: int
     user_id: int
-    degree: str
-    school: str
+    role: str
+    company: str
     date_from: str
     date_to: str
     description: str
 
-    __tablename__ = "education"
+    __tablename__ = "experience"
 
 
     id = db.Column(db.Integer, primary_key=True)
-    degree = db.Column(db.String(255), nullable=False)
-    school = db.Column(db.String(255), nullable=False)
+    role = db.Column(db.String(255), nullable=False)
+    company = db.Column(db.String(255), nullable=False)
     date_from = db.Column(db.Date())
     date_to = db.Column(db.Date())
     description = db.Column(db.Text, nullable=False)
@@ -31,23 +31,23 @@ class EducationModel(db.Model):
     def create_one(data):
         new_entry = {
             "user_id" : data["userId"],
-            "degree" : data["degree"], 
-            "school" : data["school"],
+            "role" : data["role"], 
+            "company" : data["company"],
             "date_from" : data["dateFrom"],
             "date_to" : data["dateTo"], 
             "description" : data["description"]
         }
 
         session = current_app.db.session
-        education = EducationModel(**new_entry)
+        experience = ExperienceModel(**new_entry)
 
-        session.add(education)
+        session.add(experience)
         session.commit()
 
 
         return {
-                "degree" : new_entry["degree"],
-                "school" : new_entry["school"],
+                "role" : new_entry["role"],
+                "company" : new_entry["company"],
                 "date_from": new_entry["date_from"],
                 "date_to": new_entry["date_to"],
                 "description" : new_entry["description"]}
