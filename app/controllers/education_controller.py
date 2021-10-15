@@ -4,16 +4,29 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.exc import NoResultFound
 
 
+VALID_KEYS = [
+    "user_id",
+    "degree",
+    "school",
+    "date_from",
+    "date_to",
+    "description"
+]
+
+
 @jwt_required()
 def get_education():
 
-    user_id = int(request.args.get('userId'))
-
     try:
+        user_id = int(request.args.get('userId'))
+
         education = EM.query.filter(EM.user_id == user_id).all()
 
     except NoResultFound:
         return {"error": "User Not in Database"}, 404
+
+    except TypeError:
+        return {"error": "Argument userId not found"}, 400
 
     return jsonify(education), 200
 
@@ -35,9 +48,15 @@ def create_education():
     except KeyError:
         data["dateTo"] = None
 
-    EM.create_one(data)
+    output = EM.create_one(data)
 
-    return jsonify({"msg": "created"}), 201
+    if isinstance(output, str):
+        return {
+            "msg": f"Key {output} not found",
+            "valid_keys": VALID_KEYS
+        }, 400
+
+    return jsonify(output), 201
 
 
 @jwt_required()
@@ -46,7 +65,7 @@ def delete_education(education_id):
     education = EM.query.get(education_id)
 
     if not education:
-        return {"error": "task not found"}, 404
+        return {"error": "Education not found"}, 404
 
     EM.query.filter(EM.id == education_id).delete()
 
