@@ -1,4 +1,6 @@
 from flask import request, jsonify, current_app
+from psycopg2.errors import NotNullViolation
+from sqlalchemy.exc import IntegrityError
 from app.models.summary_model import SummaryModel
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -41,6 +43,14 @@ def create_summary():
             'invalid_key': invalid_key,
             'valid_keys': VALID_KEYS
         }, 400
+
+    except IntegrityError as e:
+
+        if type(e.orig) == NotNullViolation:
+            doble_quote = '"'
+            single_quote = "'"
+            invalid_key = e.args[0].split(' ')[5].replace(doble_quote, single_quote)
+            return {'msg': f'Key {invalid_key} not found'}, 400
 
 
 @jwt_required()
