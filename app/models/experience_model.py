@@ -1,3 +1,4 @@
+
 from app.configs.database import db
 from dataclasses import dataclass
 from flask import current_app
@@ -47,4 +48,5 @@ class ExperienceModel(db.Model):
                 "company": new_entry["company"],
                 "date_from": new_entry["date_from"],
                 "date_to": new_entry["date_to"],
-                "description": new_entry["description"]}
+                "description": new_entry["description"]
+                }

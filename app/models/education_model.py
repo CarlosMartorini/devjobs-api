@@ -27,28 +27,25 @@ class EducationModel(db.Model):
 
     @staticmethod
     def create_one(data):
-        try:
-            new_entry = {
-                "user_id": data["userId"],
-                "degree": data["degree"],
-                "school": data["school"],
-                "date_from": data["dateFrom"],
-                "date_to": data["dateTo"],
-                "description": data["description"]
-            }
 
-            session = current_app.db.session
-            education = EducationModel(**new_entry)
+        new_entry = {
+            "user_id": data["userId"],
+            "degree": data["degree"],
+            "school": data["school"],
+            "date_from": data["dateFrom"],
+            "date_to": data["dateTo"],
+            "description": data["description"]
+        }
 
-            session.add(education)
-            session.commit()
+        session = current_app.db.session
+        education = EducationModel(**new_entry)
 
-            return {
-                    "degree": new_entry["degree"],
-                    "school": new_entry["school"],
-                    "date_from": new_entry["date_from"],
-                    "date_to": new_entry["date_to"],
-                    "description": new_entry["description"]}
-        except KeyError as e:
+        session.add(education)
+        session.commit()
 
-            return e.args[0]
+        return {
+                "degree": new_entry["degree"],
+                "school": new_entry["school"],
+                "date_from": new_entry["date_from"],
+                "date_to": new_entry["date_to"],
+                "description": new_entry["description"]}

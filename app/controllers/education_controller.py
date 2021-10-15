@@ -1,15 +1,16 @@
 from flask import jsonify, request, current_app
 from app.models.education_model import EducationModel as EM
 from flask_jwt_extended import jwt_required
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound, IntegrityError
+from psycopg2.errors import ForeignKeyViolation
 
 
 VALID_KEYS = [
     "user_id",
     "degree",
     "school",
-    "date_from",
-    "date_to",
+    "dateFrom",
+    "dateTo",
     "description"
 ]
 
@@ -48,15 +49,20 @@ def create_education():
     except KeyError:
         data["dateTo"] = None
 
-    output = EM.create_one(data)
+    try:
+        output = EM.create_one(data)
 
-    if isinstance(output, str):
+        return jsonify(output), 201
+    except KeyError as e:
         return {
-            "msg": f"Key {output} not found",
+            "msg": f"Key {e.args[0]} not found",
             "valid_keys": VALID_KEYS
         }, 400
 
-    return jsonify(output), 201
+    except IntegrityError as e:
+
+        if type(e.orig) == ForeignKeyViolation:
+            return {"msg": f"User with id {data['userId']} not found"}, 404
 
 
 @jwt_required()
