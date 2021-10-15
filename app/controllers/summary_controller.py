@@ -1,6 +1,6 @@
 from flask import request, jsonify, current_app
 from psycopg2.errors import NotNullViolation
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from app.models.summary_model import SummaryModel
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -73,6 +73,13 @@ def update_summary():
     except TypeError as e:
         invalid_key = e.args[0].split(' ')[0].strip("'")
 
+        return {
+            'invalid_key': invalid_key,
+            'valid_keys': VALID_KEYS
+        }, 400
+    except InvalidRequestError as e:
+        doble_quote = '"'
+        invalid_key = e.args[0].split(' ')[-1].replace(doble_quote, '')
         return {
             'invalid_key': invalid_key,
             'valid_keys': VALID_KEYS
