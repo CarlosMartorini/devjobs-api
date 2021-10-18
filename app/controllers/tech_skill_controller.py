@@ -1,6 +1,6 @@
 from flask import request, jsonify, current_app
 from app.models.tech_skill_model import TechSkillModel
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError, NoResultFound
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
@@ -38,6 +38,13 @@ def create_skill():
             'invalid_keys': invalid_keys,
             'Keys': KEYS
         }, 401
+    except InvalidRequestError as a:
+        invalid_keys = a.args[0]
+
+        return {
+            'invalid_keys': f'The key {invalid_keys} not found',
+            'valid_keys': KEYS
+        }, 401
 
 
 @jwt_required()
@@ -47,9 +54,6 @@ def get_skills_by_userId():
 
     try:
         skills = TechSkillModel.query.filter(TechSkillModel.user_id == user_identity).all()
-
-        if skills == []:
-            return {"Error": "User Not in Database"}, 404
 
     except NoResultFound:
         return {"Error": "User Not in Database"}, 404

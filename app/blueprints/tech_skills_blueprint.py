@@ -1,5 +1,12 @@
 from flask import Blueprint
-from app.controllers.tech_skill_controller import create_skill, get_skills_by_userId, get_users_by_one_skill, update_skill, delete_skill
+from app.controllers.tech_skill_controller import (
+    create_skill,
+    get_skills_by_userId,
+    get_users_by_one_skill,
+    update_skill,
+    delete_skill
+)
+
 
 bp = Blueprint('tech_skills_bp', __name__, url_prefix='/techskills')
 
