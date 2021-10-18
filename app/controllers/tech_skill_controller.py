@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 KEYS = [
     'description',
-    'level', 
+    'level'
 ]
 
 
@@ -49,24 +49,24 @@ def get_skills_by_userId():
         skills = TechSkillModel.query.filter(TechSkillModel.user_id == user_identity).all()
 
         if skills == []:
-            return { "Error": "User Not in Database" }, 404
+            return {"Error": "User Not in Database"}, 404
 
     except NoResultFound:
-        return { "Error": "User Not in Database" }, 404
+        return {"Error": "User Not in Database"}, 404
 
     return jsonify(skills), 200
 
 
 @jwt_required()
 def get_users_by_one_skill(description_like, level_like):
-    
+
     try:
         skills = TechSkillModel.query.filter(
-                TechSkillModel.description == description_like and TechSkillModel.level == level_like
+                TechSkillModel.description == description_like, TechSkillModel.level == level_like
             ).all()
 
     except NoResultFound:
-        return { "Error": "Description or Level Not in Database" }, 404
+        return {"Error": "Description or Level Not in Database"}, 404
 
     return jsonify(skills)
 
@@ -74,7 +74,7 @@ def get_users_by_one_skill(description_like, level_like):
 @jwt_required()
 def update_skill(skill_id):
     session = current_app.db.session
-    
+
     user = get_jwt_identity()
     user_identity = user['id']
 
@@ -82,20 +82,16 @@ def update_skill(skill_id):
 
     try:
         TechSkillModel.query.filter(
-            TechSkillModel.user_id==user_identity and 
+            TechSkillModel.user_id == user_identity,
             TechSkillModel.id == skill_id).update(data)
-        skills_update = get_jwt_identity()
 
         session.commit()
 
-        if not skills_update:
-            return { "Error": "Skill not found" }, 404
-
         output_update = TechSkillModel.query.filter(
-            TechSkillModel.user_id==user_identity and 
+            TechSkillModel.user_id == user_identity,
             TechSkillModel.id == skill_id).first()
 
-        return { "Update": output_update }
+        return {"Update": output_update}
 
     except TypeError as a:
         invalid_keys = a.args[0].split(' ')[0].strip("'")
@@ -104,16 +100,16 @@ def update_skill(skill_id):
             'invalid_keys': invalid_keys,
             'Keys': KEYS
         }
-        
+
 
 @jwt_required()
 def delete_skill(skill_id):
     skill = TechSkillModel.query.get(skill_id)
 
     if not skill:
-        return { "Error": "Skill not found" }, 404
+        return {"Error": "Skill not found"}, 404
 
-    TechSkillModel.query.filter(TechSkillModel.id==skill_id).delete()
+    TechSkillModel.query.filter(TechSkillModel.id == skill_id).delete()
 
     current_app.db.session.commit()
 

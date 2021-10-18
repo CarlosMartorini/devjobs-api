@@ -16,4 +16,3 @@ class TechSkillModel(db.Model):
     level = db.Column(db.String(255), nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
