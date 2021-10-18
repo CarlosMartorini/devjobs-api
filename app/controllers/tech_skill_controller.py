@@ -1,6 +1,7 @@
 from flask import request, jsonify, current_app
+from psycopg2.errors import NotNullViolation
 from app.models.tech_skill_model import TechSkillModel
-from sqlalchemy.exc import InvalidRequestError, NoResultFound
+from sqlalchemy.exc import IntegrityError, InvalidRequestError, NoResultFound
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
@@ -31,7 +32,6 @@ def create_skill():
         return jsonify(skill), 201
     except TypeError as a:
         invalid_keys = a.args[0].split(' ')[0].strip("'")
-
         return {
             'invalid_keys': invalid_keys,
             'Keys': KEYS
@@ -43,6 +43,13 @@ def create_skill():
             'invalid_keys': f'The key {invalid_keys} not found',
             'valid_keys': KEYS
         }, 401
+    except IntegrityError as e:
+
+        if type(e.orig) == NotNullViolation:
+            doble_quote = '"'
+            single_quote = "'"
+            invalid_key = e.args[0].split(' ')[5].replace(doble_quote, single_quote)
+            return {'msg': f'Key {invalid_key} not found'}, 400
 
 
 @jwt_required()
@@ -83,9 +90,12 @@ def update_skill(skill_id):
     data = request.get_json()
 
     try:
-        TechSkillModel.query.filter(
+        is_updated = TechSkillModel.query.filter(
             TechSkillModel.user_id == user_identity,
             TechSkillModel.id == skill_id).update(data)
+
+        if not bool(is_updated):
+            return {"msg": "Skill not found"}, 404
 
         session.commit()
 
@@ -95,18 +105,19 @@ def update_skill(skill_id):
 
         return {"Update": output_update}
 
-    except TypeError as a:
-        invalid_keys = a.args[0].split(' ')[0].strip("'")
+    except TypeError as e:
+        invalid_keys = e.args[0].split(' ')[0].strip("'")
 
         return {
             'invalid_keys': invalid_keys,
             'Keys': KEYS
         }
-    except InvalidRequestError as a:
-        invalid_keys = a.args[0]
-
+    except InvalidRequestError as e:
+        doble_quote = '"'
+        single_quote = "'"
+        invalid_key = e.args[0].split(' ')[-1].replace(doble_quote, single_quote)
         return {
-            'invalid_keys': f'The key {invalid_keys} not found',
+            'invalid_keys': f'The key {invalid_key} not found',
             'valid_keys': KEYS
         }, 401
 

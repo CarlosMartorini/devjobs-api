@@ -1,6 +1,7 @@
 from flask import request, jsonify, current_app
+from psycopg2.errors import NotNullViolation
 from app.models.other_skill_model import OtherSkillModel
-from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
@@ -40,6 +41,13 @@ def create_other_skill():
             'invalid_keys': f'The key {invalid_keys} not found',
             'valid_keys': KEYS
         }, 401
+    except IntegrityError as e:
+
+        if type(e.orig) == NotNullViolation:
+            doble_quote = '"'
+            single_quote = "'"
+            invalid_key = e.args[0].split(' ')[5].replace(doble_quote, single_quote)
+            return {'msg': f'Key {invalid_key} not found'}, 400
 
 
 @jwt_required()
@@ -72,9 +80,12 @@ def update_other_skill(skill_id):
     data = request.get_json()
 
     try:
-        OtherSkillModel.query.filter(
+        is_updated = OtherSkillModel.query.filter(
             (OtherSkillModel.user_id == user_identity), (OtherSkillModel.id == skill_id)
         ).update(data)
+
+        if not bool(is_updated):
+            return {"msg": "Skill not found"}, 404
 
         session.commit()
 
