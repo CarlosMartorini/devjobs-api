@@ -8,6 +8,7 @@ from app.exc.company_exc import InvalidPasswordError
 
 @dataclass
 class CompanyModel(db.Model):
+    company_id: int
     email: str
     company_name: str
 

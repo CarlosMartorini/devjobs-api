@@ -2,7 +2,6 @@ from app.configs.database import db
 from dataclasses import dataclass
 from flask import current_app
 
-
 @dataclass
 class EducationModel(db.Model):
 
@@ -48,4 +47,5 @@ class EducationModel(db.Model):
                 "school": new_entry["school"],
                 "date_from": new_entry["date_from"],
                 "date_to": new_entry["date_to"],
-                "description": new_entry["description"]}
+                "description": new_entry["description"]
+                }
