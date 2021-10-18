@@ -6,7 +6,7 @@ from . import (
     summary_blueprint,
     company_blueprint,
     tech_skills_blueprint,
-    other_skill_blueprint
+    other_skill_blueprint,
     message_blueprint
 )
 
