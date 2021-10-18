@@ -1,18 +1,15 @@
 from flask import request, jsonify, current_app
 from psycopg2.errors import NotNullViolation
-from app.models.tech_skill_model import TechSkillModel
-from sqlalchemy.exc import IntegrityError, InvalidRequestError, NoResultFound
+from app.models.other_skill_model import OtherSkillModel
+from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
-KEYS = [
-    'description',
-    'level'
-]
+KEYS = ['description', 'level']
 
 
 @jwt_required()
-def create_skill():
+def create_other_skill():
     user_identity = get_jwt_identity()
     data = request.get_json()
 
@@ -23,7 +20,7 @@ def create_skill():
 
         data['user_id'] = user_identity['id']
 
-        skill = TechSkillModel(**data)
+        skill = OtherSkillModel(**data)
 
         session = current_app.db.session
         session.add(skill)
@@ -32,6 +29,7 @@ def create_skill():
         return jsonify(skill), 201
     except TypeError as a:
         invalid_keys = a.args[0].split(' ')[0].strip("'")
+
         return {
             'invalid_keys': invalid_keys,
             'Keys': KEYS
@@ -53,35 +51,27 @@ def create_skill():
 
 
 @jwt_required()
-def get_skills_by_userId():
+def get_others_skills_by_user():
     user = get_jwt_identity()
     user_identity = user['id']
 
-    try:
-        skills = TechSkillModel.query.filter(TechSkillModel.user_id == user_identity).all()
-
-    except NoResultFound:
-        return {"Error": "User Not in Database"}, 404
+    skills = OtherSkillModel.query.filter(OtherSkillModel.user_id == user_identity).all()
 
     return jsonify(skills), 200
 
 
 @jwt_required()
-def get_users_by_one_skill(description_like, level_like):
+def get_by_other_skill(description_like, level_like):
 
-    try:
-        skills = TechSkillModel.query.filter(
-                TechSkillModel.description == description_like, TechSkillModel.level == level_like
-            ).all()
-
-    except NoResultFound:
-        return {"Error": "Description or Level Not in Database"}, 404
+    skills = OtherSkillModel.query.filter(
+            (OtherSkillModel.description == description_like), (OtherSkillModel.level == level_like)
+        ).all()
 
     return jsonify(skills)
 
 
 @jwt_required()
-def update_skill(skill_id):
+def update_other_skill(skill_id):
     session = current_app.db.session
 
     user = get_jwt_identity()
@@ -90,46 +80,45 @@ def update_skill(skill_id):
     data = request.get_json()
 
     try:
-        is_updated = TechSkillModel.query.filter(
-            TechSkillModel.user_id == user_identity,
-            TechSkillModel.id == skill_id).update(data)
+        is_updated = OtherSkillModel.query.filter(
+            (OtherSkillModel.user_id == user_identity), (OtherSkillModel.id == skill_id)
+        ).update(data)
 
         if not bool(is_updated):
             return {"msg": "Skill not found"}, 404
 
         session.commit()
 
-        output_update = TechSkillModel.query.filter(
-            TechSkillModel.user_id == user_identity,
-            TechSkillModel.id == skill_id).first()
+        output_update = OtherSkillModel.query.filter(
+            (OtherSkillModel.user_id == user_identity), (OtherSkillModel.id == skill_id)
+        ).first()
 
-        return {"Update": output_update}
+        return {"Update": output_update}, 200
 
-    except TypeError as e:
-        invalid_keys = e.args[0].split(' ')[0].strip("'")
+    except TypeError as a:
+        invalid_keys = a.args[0].split(' ')[0].strip("'")
 
         return {
             'invalid_keys': invalid_keys,
             'Keys': KEYS
         }
-    except InvalidRequestError as e:
-        doble_quote = '"'
-        single_quote = "'"
-        invalid_key = e.args[0].split(' ')[-1].replace(doble_quote, single_quote)
+    except InvalidRequestError as a:
+        invalid_keys = a.args[0].split(' ')[-1].strip("'").replace('"', "")
+
         return {
-            'invalid_keys': f'The key {invalid_key} not found',
+            'invalid_keys': f'The key {invalid_keys} not found',
             'valid_keys': KEYS
         }, 401
 
 
 @jwt_required()
-def delete_skill(skill_id):
-    skill = TechSkillModel.query.get(skill_id)
+def delete_other_skill(skill_id):
+    skill = OtherSkillModel.query.get(skill_id)
 
     if not skill:
         return {"Error": "Skill not found"}, 404
 
-    TechSkillModel.query.filter(TechSkillModel.id == skill_id).delete()
+    OtherSkillModel.query.filter(OtherSkillModel.id == skill_id).delete()
 
     current_app.db.session.commit()
 
