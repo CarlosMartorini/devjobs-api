@@ -5,12 +5,9 @@ from . import (
     experience_blueprint,
     summary_blueprint,
     company_blueprint,
-<<<<<<< HEAD
     tech_skills_blueprint,
     other_skill_blueprint
-=======
     message_blueprint
->>>>>>> 38260bf8547b9bad12f2ef3a841aa792d519f592
 )
 
 
