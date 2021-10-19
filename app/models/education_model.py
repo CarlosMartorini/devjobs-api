@@ -46,6 +46,6 @@ class EducationModel(db.Model):
         return {
                 "degree": new_entry["degree"],
                 "school": new_entry["school"],
-                "date_from": new_entry["date_from"],
-                "date_to": new_entry["date_to"],
+                "date_from": new_entry["dateFrom"],
+                "date_to": new_entry["dateTo"],
                 "description": new_entry["description"]}

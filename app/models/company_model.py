@@ -9,7 +9,7 @@ from app.exc.company_exc import InvalidPasswordError
 @dataclass
 class CompanyModel(db.Model):
     email: str
-    company_name: str
+    companyName: str
 
     __tablename__ = 'companies'
 
