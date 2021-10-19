@@ -2,7 +2,7 @@ from flask import request, jsonify, current_app
 from psycopg2.errors import NotNullViolation
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from app.models.summary_model import SummaryModel
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 
 
 VALID_KEYS = [
@@ -19,7 +19,7 @@ def create_summary():
     session = current_app.db.session
 
     try:
-        user = get_jwt_identity()
+        user_id = int(request.args.get('userId'))
 
         data = request.get_json()
 
@@ -27,7 +27,7 @@ def create_summary():
             if data[item] == "":
                 return {'msg': f'Key {item} is empty!'}, 400
 
-        data['user_id'] = user['id']
+        data['user_id'] = user_id
 
         new_summary = SummaryModel(**data)
 
@@ -60,13 +60,13 @@ def update_summary():
     try:
         data = request.get_json()
 
-        user = get_jwt_identity()
+        user_id = int(request.args.get('userId'))
 
-        SummaryModel.query.filter(SummaryModel.user_id == user['id']).update(data)
+        SummaryModel.query.filter(SummaryModel.user_id == user_id).update(data)
 
         session.commit()
 
-        output_summary = SummaryModel.query.filter_by(user_id=user['id']).first()
+        output_summary = SummaryModel.query.filter_by(user_id=user_id).first()
 
         return jsonify(output_summary), 200
 
@@ -88,9 +88,9 @@ def update_summary():
 
 @jwt_required()
 def get_summary():
-    user = get_jwt_identity()
+    user_id = int(request.args.get('userId'))
 
-    summary = SummaryModel.query.filter_by(user_id=user['id']).first()
+    summary = SummaryModel.query.filter_by(user_id=user_id).first()
 
     if not summary:
         return {'msg': 'Summary not found!'}, 404

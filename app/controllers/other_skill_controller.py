@@ -2,7 +2,7 @@ from flask import request, jsonify, current_app
 from psycopg2.errors import NotNullViolation
 from app.models.other_skill_model import OtherSkillModel
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 
 
 KEYS = ['description', 'level']
@@ -10,7 +10,8 @@ KEYS = ['description', 'level']
 
 @jwt_required()
 def create_other_skill():
-    user_identity = get_jwt_identity()
+    user_identity = int(request.args.get('userId'))
+
     data = request.get_json()
 
     try:
@@ -18,7 +19,7 @@ def create_other_skill():
             if data[key] == "":
                 return {'msg': f'Key {key} is empty'}, 400
 
-        data['user_id'] = user_identity['id']
+        data['user_id'] = user_identity
 
         skill = OtherSkillModel(**data)
 
@@ -52,8 +53,7 @@ def create_other_skill():
 
 @jwt_required()
 def get_others_skills_by_user():
-    user = get_jwt_identity()
-    user_identity = user['id']
+    user_identity = int(request.args.get('userId'))
 
     skills = OtherSkillModel.query.filter(OtherSkillModel.user_id == user_identity).all()
 
@@ -74,8 +74,7 @@ def get_by_other_skill(description_like, level_like):
 def update_other_skill(skill_id):
     session = current_app.db.session
 
-    user = get_jwt_identity()
-    user_identity = user['id']
+    user_identity = int(request.args.get('userId'))
 
     data = request.get_json()
 

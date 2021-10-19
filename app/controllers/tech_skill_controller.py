@@ -2,7 +2,7 @@ from flask import request, jsonify, current_app
 from psycopg2.errors import NotNullViolation
 from app.models.tech_skill_model import TechSkillModel
 from sqlalchemy.exc import IntegrityError, InvalidRequestError, NoResultFound
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 
 
 KEYS = [
@@ -13,7 +13,8 @@ KEYS = [
 
 @jwt_required()
 def create_skill():
-    user_identity = get_jwt_identity()
+    user_id = int(request.args.get('userId'))
+
     data = request.get_json()
 
     try:
@@ -21,7 +22,7 @@ def create_skill():
             if data[key] == "":
                 return {'msg': f'Key {key} is empty'}, 400
 
-        data['user_id'] = user_identity['id']
+        data['user_id'] = user_id
 
         skill = TechSkillModel(**data)
 
@@ -54,11 +55,10 @@ def create_skill():
 
 @jwt_required()
 def get_skills_by_userId():
-    user = get_jwt_identity()
-    user_identity = user['id']
+    user_id = int(request.args.get('userId'))
 
     try:
-        skills = TechSkillModel.query.filter(TechSkillModel.user_id == user_identity).all()
+        skills = TechSkillModel.query.filter(TechSkillModel.user_id == user_id).all()
 
     except NoResultFound:
         return {"msg": "User Not in Database"}, 404
@@ -84,14 +84,13 @@ def get_users_by_one_skill(description_like, level_like):
 def update_skill(skill_id):
     session = current_app.db.session
 
-    user = get_jwt_identity()
-    user_identity = user['id']
+    user_id = int(request.args.get('userId'))
 
     data = request.get_json()
 
     try:
         is_updated = TechSkillModel.query.filter(
-            TechSkillModel.user_id == user_identity,
+            TechSkillModel.user_id == user_id,
             TechSkillModel.id == skill_id).update(data)
 
         if not bool(is_updated):
@@ -100,7 +99,7 @@ def update_skill(skill_id):
         session.commit()
 
         output_update = TechSkillModel.query.filter(
-            TechSkillModel.user_id == user_identity,
+            TechSkillModel.user_id == user_id,
             TechSkillModel.id == skill_id).first()
 
         return jsonify(output_update)
