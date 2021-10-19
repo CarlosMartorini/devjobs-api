@@ -9,5 +9,8 @@ def init_app(app: Flask):
     from app.models.education_model import EducationModel  # noqa : F401
     from app.models.experience_model import ExperienceModel  # noqa : F401
     from app.models.company_model import CompanyModel  # noqa : F401
+    from app.models.tech_skill_model import TechSkillModel # noqa : F401
+    from app.models.other_skill_model import OtherSkillModel # noqa : F401
+    from app.models.message_model import MessageModel  # noqa : F401
 
     Migrate(app, app.db)

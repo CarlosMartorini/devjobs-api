@@ -1,3 +1,4 @@
+from sqlalchemy.orm import relationship
 from app.configs.database import db
 from dataclasses import dataclass
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,10 +9,10 @@ class UserModel(db.Model):
 
     id: int
     email: str
-    first_name: str
-    last_name: str
-    birth_date: str
-    linkedin_profile: str
+    firstName: str
+    lastName: str
+    birthDate: str
+    linkedinProfile: str
     address: str
     phone: str
 
@@ -20,12 +21,19 @@ class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), nullable=False, unique=True)
     password_hash = db.Column(db.String(127), nullable=False)
-    first_name = db.Column(db.String(255), nullable=False)
-    last_name = db.Column(db.String(255), nullable=False)
-    birth_date = db.Column(db.Date(), nullable=False)
-    linkedin_profile = db.Column(db.String(127), nullable=False)
+    firstName = db.Column(db.String(255), nullable=False)
+    lastName = db.Column(db.String(255), nullable=False)
+    birthDate = db.Column(db.Date(), nullable=False)
+    linkedinProfile = db.Column(db.String(127), nullable=False)
     address = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(255), nullable=False)
+
+    educations = relationship('EducationModel')
+    experiences = relationship('ExperienceModel')
+    summary = relationship('SummaryModel')
+    otherSkills = relationship('OtherSkillModel')
+    techSkills = relationship('TechSkillModel')
+    messages = relationship('MessageModel')
 
     @property
     def password(self):

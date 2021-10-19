@@ -10,17 +10,17 @@ class EducationModel(db.Model):
     user_id: int
     degree: str
     school: str
-    date_from: str
-    date_to: str
+    dateFrom: str
+    dateTo: str
     description: str
 
-    __tablename__ = "education"
+    __tablename__ = "educations"
 
     id = db.Column(db.Integer, primary_key=True)
     degree = db.Column(db.String(255), nullable=False)
     school = db.Column(db.String(255), nullable=False)
-    date_from = db.Column(db.Date())
-    date_to = db.Column(db.Date())
+    dateFrom = db.Column(db.Date())
+    dateTo = db.Column(db.Date())
     description = db.Column(db.Text, nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -32,8 +32,8 @@ class EducationModel(db.Model):
             "user_id": data["userId"],
             "degree": data["degree"],
             "school": data["school"],
-            "date_from": data["dateFrom"],
-            "date_to": data["dateTo"],
+            "dateFrom": data["dateFrom"],
+            "dateTo": data["dateTo"],
             "description": data["description"]
         }
 
@@ -46,6 +46,7 @@ class EducationModel(db.Model):
         return {
                 "degree": new_entry["degree"],
                 "school": new_entry["school"],
-                "date_from": new_entry["date_from"],
-                "date_to": new_entry["date_to"],
-                "description": new_entry["description"]}
+                "dateFrom": new_entry["dateFrom"],
+                "dateTo": new_entry["dateTo"],
+                "description": new_entry["description"]
+        }
