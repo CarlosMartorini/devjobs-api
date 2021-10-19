@@ -104,5 +104,24 @@ def get_user(id: int):
     return jsonify(user), 200
 
 
+@jwt_required()
+def get_relationships_user(id: int):
+    user = UserModel.query.get(id)
+
+    if not user:
+        return {'msg': 'User not founded!'}, 404
+
+    relationships = {
+        "educations": user.educations,
+        "experiences": user.experiences,
+        "summary": user.summary,
+        "otherSkills": user.otherSkills,
+        "techSkills": user.techSkills,
+        "messages": user.messages,
+    }
+
+    return relationships, 200
+
+
 def delete_user():
     ...
