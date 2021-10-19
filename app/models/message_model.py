@@ -9,13 +9,12 @@ class MessageModel(db.Model):
 
     message: str
     id: int
-    company_id: int
-    user_id: int
+    companyId: int
+    userId: int
 
     __tablename__ = 'messages'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    company_id = Column(Integer, ForeignKey('companies.id'))
+    userId = Column(Integer, ForeignKey('users.id'), nullable=False)
+    companyId = Column(Integer, ForeignKey('companies.id'), nullable=False)
     message = Column(Text, nullable=False)
-    
