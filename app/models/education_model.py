@@ -32,8 +32,8 @@ class EducationModel(db.Model):
             "user_id": data["userId"],
             "degree": data["degree"],
             "school": data["school"],
-            "date_from": data["dateFrom"],
-            "date_to": data["dateTo"],
+            "dateFrom": data["dateFrom"],
+            "dateTo": data["dateTo"],
             "description": data["description"]
         }
 
@@ -46,6 +46,6 @@ class EducationModel(db.Model):
         return {
                 "degree": new_entry["degree"],
                 "school": new_entry["school"],
-                "date_from": new_entry["dateFrom"],
-                "date_to": new_entry["dateTo"],
+                "dateFrom": new_entry["dateFrom"],
+                "dateTo": new_entry["dateTo"],
                 "description": new_entry["description"]}

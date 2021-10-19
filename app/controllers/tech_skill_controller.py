@@ -13,16 +13,17 @@ KEYS = [
 
 @jwt_required()
 def create_skill():
-    user_id = int(request.args.get('userId'))
+    user_id = request.args.get('userId')
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
 
     data = request.get_json()
+    data['user_id'] = int(user_id)
 
     try:
         for key in data:
             if data[key] == "":
                 return {'msg': f'Key {key} is empty'}, 400
-
-        data['user_id'] = user_id
 
         skill = TechSkillModel(**data)
 
@@ -55,10 +56,12 @@ def create_skill():
 
 @jwt_required()
 def get_skills_by_userId():
-    user_id = int(request.args.get('userId'))
+    user_id = request.args.get('userId')
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
 
     try:
-        skills = TechSkillModel.query.filter(TechSkillModel.user_id == user_id).all()
+        skills = TechSkillModel.query.filter(TechSkillModel.user_id == int(user_id)).all()
 
     except NoResultFound:
         return {"msg": "User Not in Database"}, 404
@@ -84,13 +87,15 @@ def get_users_by_one_skill(description_like, level_like):
 def update_skill(skill_id):
     session = current_app.db.session
 
-    user_id = int(request.args.get('userId'))
+    user_id = request.args.get('userId')
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
 
     data = request.get_json()
 
     try:
         is_updated = TechSkillModel.query.filter(
-            TechSkillModel.user_id == user_id,
+            TechSkillModel.user_id == int(user_id),
             TechSkillModel.id == skill_id).update(data)
 
         if not bool(is_updated):
@@ -99,7 +104,7 @@ def update_skill(skill_id):
         session.commit()
 
         output_update = TechSkillModel.query.filter(
-            TechSkillModel.user_id == user_id,
+            TechSkillModel.user_id == int(user_id),
             TechSkillModel.id == skill_id).first()
 
         return jsonify(output_update)
@@ -113,10 +118,9 @@ def update_skill(skill_id):
         }
     except InvalidRequestError as e:
         doble_quote = '"'
-        single_quote = "'"
-        invalid_key = e.args[0].split(' ')[-1].replace(doble_quote, single_quote)
+        invalid_key = e.args[0].split(' ')[-1].replace(doble_quote, '')
         return {
-            'invalid_keys': f'The key {invalid_key} not found',
+            'invalid_keys': {invalid_key},
             'valid_keys': KEYS
         }, 401
 

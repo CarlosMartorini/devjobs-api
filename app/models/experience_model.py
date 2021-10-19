@@ -32,8 +32,8 @@ class ExperienceModel(db.Model):
             "user_id": data["userId"],
             "role": data["role"],
             "company": data["company"],
-            "date_from": data["dateFrom"],
-            "date_to": data["dateTo"],
+            "dateFrom": data["dateFrom"],
+            "dateTo": data["dateTo"],
             "description": data["description"]
         }
 
@@ -46,7 +46,7 @@ class ExperienceModel(db.Model):
         return {
                 "role": new_entry["role"],
                 "company": new_entry["company"],
-                "date_from": new_entry["dateFrom"],
-                "date_to": new_entry["dateTo"],
+                "dateFrom": new_entry["dateFrom"],
+                "dateTo": new_entry["dateTo"],
                 "description": new_entry["description"]
                 }

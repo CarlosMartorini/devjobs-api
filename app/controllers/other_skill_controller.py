@@ -10,16 +10,17 @@ KEYS = ['description', 'level']
 
 @jwt_required()
 def create_other_skill():
-    user_identity = int(request.args.get('userId'))
+    user_id = request.args.get('userId')
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
 
     data = request.get_json()
+    data['user_id'] = int(user_id)
 
     try:
         for key in data:
             if data[key] == "":
                 return {'msg': f'Key {key} is empty'}, 400
-
-        data['user_id'] = user_identity
 
         skill = OtherSkillModel(**data)
 
@@ -53,9 +54,11 @@ def create_other_skill():
 
 @jwt_required()
 def get_others_skills_by_user():
-    user_identity = int(request.args.get('userId'))
+    user_id = request.args.get('userId')
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
 
-    skills = OtherSkillModel.query.filter(OtherSkillModel.user_id == user_identity).all()
+    skills = OtherSkillModel.query.filter(OtherSkillModel.user_id == int(user_id)).all()
 
     return jsonify(skills), 200
 
@@ -74,13 +77,15 @@ def get_by_other_skill(description_like, level_like):
 def update_other_skill(skill_id):
     session = current_app.db.session
 
-    user_identity = int(request.args.get('userId'))
+    user_id = request.args.get('userId')
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
 
     data = request.get_json()
 
     try:
         is_updated = OtherSkillModel.query.filter(
-            (OtherSkillModel.user_id == user_identity), (OtherSkillModel.id == skill_id)
+            (OtherSkillModel.user_id == int(user_id)), (OtherSkillModel.id == skill_id)
         ).update(data)
 
         if not bool(is_updated):
@@ -89,7 +94,7 @@ def update_other_skill(skill_id):
         session.commit()
 
         output_update = OtherSkillModel.query.filter(
-            (OtherSkillModel.user_id == user_identity), (OtherSkillModel.id == skill_id)
+            (OtherSkillModel.user_id == int(user_id)), (OtherSkillModel.id == skill_id)
         ).first()
 
         return jsonify(output_update), 200
@@ -105,7 +110,7 @@ def update_other_skill(skill_id):
         invalid_keys = a.args[0].split(' ')[-1].strip("'").replace('"', "")
 
         return {
-            'invalid_key': f'The key {invalid_keys} not found',
+            'invalid_key': invalid_keys,
             'valid_keys': KEYS
         }, 401
 

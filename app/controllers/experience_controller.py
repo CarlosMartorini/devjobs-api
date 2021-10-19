@@ -18,9 +18,12 @@ VALID_KEYS = [
 def get_experience():
 
     try:
-        user_id = int(request.args.get('userId'))
+        user_id = request.args.get('userId')
 
-        experience = EXM.query.filter(EXM.user_id == user_id).all()
+        if not user_id:
+            return {"msg": "Argument userId is required"}, 400
+
+        experience = EXM.query.filter(EXM.user_id == int(user_id)).all()
 
     except NoResultFound:
         return {"msg": "User Not in Database"}, 404
@@ -34,7 +37,12 @@ def get_experience():
 @jwt_required()
 def create_experience():
 
+    user_id = request.args.get('userId')
     data = request.get_json()
+
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
+    data["userId"] = int(user_id)
 
     try:
         data["dateFrom"]

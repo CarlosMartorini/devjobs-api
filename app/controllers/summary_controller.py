@@ -1,5 +1,5 @@
 from flask import request, jsonify, current_app
-from psycopg2.errors import NotNullViolation
+from psycopg2.errors import NotNullViolation, UniqueViolation
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 from app.models.summary_model import SummaryModel
 from flask_jwt_extended import jwt_required
@@ -19,7 +19,10 @@ def create_summary():
     session = current_app.db.session
 
     try:
-        user_id = int(request.args.get('userId'))
+        user_id = request.args.get('userId')
+
+        if not user_id:
+            return {"msg": "Argument userId is required"}, 400
 
         data = request.get_json()
 
@@ -27,7 +30,7 @@ def create_summary():
             if data[item] == "":
                 return {'msg': f'Key {item} is empty!'}, 400
 
-        data['user_id'] = user_id
+        data['user_id'] = int(user_id)
 
         new_summary = SummaryModel(**data)
 
@@ -52,6 +55,9 @@ def create_summary():
             invalid_key = e.args[0].split(' ')[5].replace(doble_quote, single_quote)
             return {'msg': f'Key {invalid_key} not found'}, 400
 
+        if type(e.orig) == UniqueViolation:
+            return {"msg": f"User with id {user_id} already have a summary"}, 409
+
 
 @jwt_required()
 def update_summary():
@@ -60,13 +66,16 @@ def update_summary():
     try:
         data = request.get_json()
 
-        user_id = int(request.args.get('userId'))
+        user_id = request.args.get('userId')
 
-        SummaryModel.query.filter(SummaryModel.user_id == user_id).update(data)
+        if not user_id:
+            return {"msg": "Argument userId is required"}, 400
+
+        SummaryModel.query.filter(SummaryModel.user_id == int(user_id)).update(data)
 
         session.commit()
 
-        output_summary = SummaryModel.query.filter_by(user_id=user_id).first()
+        output_summary = SummaryModel.query.filter_by(user_id=int(user_id)).first()
 
         return jsonify(output_summary), 200
 

@@ -27,7 +27,7 @@ def create_user():
 
         for item in data:
             if data[item] == "":
-                return {'error': f'Key {item} is empty!'}, 400
+                return {'msg': f'Key {item} is empty!'}, 400
 
         password_to_hash = data.pop('password')
 
@@ -42,12 +42,12 @@ def create_user():
 
     except IntegrityError as e:
         if type(e.orig) == UniqueViolation:
-            return {'error': 'Email already exists!'}, 409
+            return {'msg': 'Email already exists!'}, 409
 
         if type(e.orig) == NotNullViolation:
             invalid_keys = e.args[0].split(' ')[5].replace('"', "'")
 
-            return {'error': f'Key {invalid_keys} not found'}, 400
+            return {'msg': f'Key {invalid_keys} not found'}, 400
 
     except TypeError as e:
         invalid_key = e.args[0].split(' ')[0].strip("'")
@@ -64,12 +64,12 @@ def login():
 
         for item in data:
             if data[item] == "":
-                return {'error': f'Key {item} is empty!'}, 400
+                return {'msg': f'Key {item} is empty!'}, 400
 
         found_user: UserModel = UserModel.query.filter_by(email=data['email']).first()
 
         if not found_user:
-            return {'error': 'User not found!'}, 404
+            return {'msg': 'User not found!'}, 404
 
         if found_user.verify_password(data['password']):
             access_token = create_access_token(identity=found_user)
@@ -79,7 +79,7 @@ def login():
             }, 200
 
         else:
-            return {'error': 'Unauthorized'}, 401
+            return {'msg': 'Unauthorized'}, 401
 
     except KeyError as e:
         invalid_keys = e.args[0]
@@ -99,7 +99,7 @@ def get_user(id: int):
     user = UserModel.query.get(id)
 
     if not user:
-        return {'message': 'User not founded!'}, 404
+        return {'msg': 'User not founded!'}, 404
 
     return jsonify(user), 200
 

@@ -34,9 +34,13 @@ def get_education():
 
 @jwt_required()
 def create_education():
-
+    user_id = request.args.get('userId')
     data = request.get_json()
 
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
+
+    data["userId"] = int(user_id)
     try:
         data["dateFrom"]
 
