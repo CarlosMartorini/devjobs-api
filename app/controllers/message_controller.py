@@ -22,7 +22,7 @@ def create_message():
 def get_user_messages():
     user_id = int(request.args.get('userId'))
 
-    messages = db.session.query(MessageModel, CompanyModel).select_from(MessageModel).join(CompanyModel).filter(CompanyModel.id == MessageModel.company_id).all()
+    messages = db.session.query(MessageModel, CompanyModel).select_from(MessageModel).join(CompanyModel).filter(MessageModel.user_id == user_id).all()
 
     list_messages = [{
         "message" : message[0].message,
