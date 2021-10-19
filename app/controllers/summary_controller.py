@@ -10,7 +10,7 @@ VALID_KEYS = [
     'city',
     'speciality',
     'disponibility',
-    'experience_time',
+    'experienceTime',
 ]
 
 

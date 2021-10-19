@@ -10,8 +10,8 @@ class EducationModel(db.Model):
     user_id: int
     degree: str
     school: str
-    date_from: str
-    date_to: str
+    dateFrom: str
+    dateTo: str
     description: str
 
     __tablename__ = "education"
@@ -19,8 +19,8 @@ class EducationModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     degree = db.Column(db.String(255), nullable=False)
     school = db.Column(db.String(255), nullable=False)
-    date_from = db.Column(db.Date())
-    date_to = db.Column(db.Date())
+    dateFrom = db.Column(db.Date())
+    dateTo = db.Column(db.Date())
     description = db.Column(db.Text, nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)

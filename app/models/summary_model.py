@@ -10,7 +10,7 @@ class SummaryModel(db.Model):
     city: str
     speciality: str
     disponibility: str
-    experience_time: int
+    experienceTime: int
     user_id: int
 
     __tablename__ = "summaries"
@@ -20,6 +20,6 @@ class SummaryModel(db.Model):
     city = db.Column(db.String(255), nullable=False)
     speciality = db.Column(db.String(255), nullable=False)
     disponibility = db.Column(db.String(255), nullable=False)
-    experience_time = db.Column(db.Integer, nullable=False)
+    experienceTime = db.Column(db.Integer, nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)

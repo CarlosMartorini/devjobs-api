@@ -8,7 +8,7 @@ from psycopg2.errors import NotNullViolation, UniqueViolation
 from app.exc.company_exc import InvalidPasswordError
 
 
-VALID_KEYS = ['email', 'company_name', 'password']
+VALID_KEYS = ['email', 'companyName', 'password']
 
 
 def create_company():

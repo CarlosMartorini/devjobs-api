@@ -8,10 +8,10 @@ from psycopg2.errors import UniqueViolation, NotNullViolation
 VALID_KEYS = [
     'email',
     'password',
-    'first_name',
-    'last_name',
-    'birth_date',
-    'linkedin_profile',
+    'firstName',
+    'lastName',
+    'birthDate',
+    'linkedinProfile',
     'address',
     'phone'
 ]

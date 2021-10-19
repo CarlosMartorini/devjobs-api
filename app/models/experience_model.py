@@ -11,8 +11,8 @@ class ExperienceModel(db.Model):
     user_id: int
     role: str
     company: str
-    date_from: str
-    date_to: str
+    dateFrom: str
+    dateTo: str
     description: str
 
     __tablename__ = "experience"
