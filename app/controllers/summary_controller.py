@@ -25,7 +25,7 @@ def create_summary():
 
         for item in data:
             if data[item] == "":
-                return {'error': f'Key {item} is empty!'}, 400
+                return {'msg': f'Key {item} is empty!'}, 400
 
         data['user_id'] = user['id']
 
@@ -68,7 +68,7 @@ def update_summary():
 
         output_summary = SummaryModel.query.filter_by(user_id=user['id']).first()
 
-        return {'summary_update': output_summary}, 200
+        return jsonify(output_summary), 200
 
     except TypeError as e:
         invalid_key = e.args[0].split(' ')[0].strip("'")
@@ -93,9 +93,9 @@ def get_summary():
     summary = SummaryModel.query.filter_by(user_id=user['id']).first()
 
     if not summary:
-        return {'error': 'Summary not found!'}, 404
+        return {'msg': 'Summary not found!'}, 404
 
-    return {'summary': summary}, 200
+    return jsonify(summary), 200
 
 
 def delete_summary():

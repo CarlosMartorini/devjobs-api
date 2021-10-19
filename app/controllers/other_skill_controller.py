@@ -16,7 +16,7 @@ def create_other_skill():
     try:
         for key in data:
             if data[key] == "":
-                return {'Error': f'Key {key} is empty'}, 400
+                return {'msg': f'Key {key} is empty'}, 400
 
         data['user_id'] = user_identity['id']
 
@@ -93,20 +93,20 @@ def update_other_skill(skill_id):
             (OtherSkillModel.user_id == user_identity), (OtherSkillModel.id == skill_id)
         ).first()
 
-        return {"Update": output_update}, 200
+        return jsonify(output_update), 200
 
     except TypeError as a:
         invalid_keys = a.args[0].split(' ')[0].strip("'")
 
         return {
             'invalid_keys': invalid_keys,
-            'Keys': KEYS
+            'valid_keys': KEYS
         }
     except InvalidRequestError as a:
         invalid_keys = a.args[0].split(' ')[-1].strip("'").replace('"', "")
 
         return {
-            'invalid_keys': f'The key {invalid_keys} not found',
+            'invalid_key': f'The key {invalid_keys} not found',
             'valid_keys': KEYS
         }, 401
 
@@ -116,7 +116,7 @@ def delete_other_skill(skill_id):
     skill = OtherSkillModel.query.get(skill_id)
 
     if not skill:
-        return {"Error": "Skill not found"}, 404
+        return {"msg": "Skill not found"}, 404
 
     OtherSkillModel.query.filter(OtherSkillModel.id == skill_id).delete()
 

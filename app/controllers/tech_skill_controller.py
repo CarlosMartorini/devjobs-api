@@ -19,7 +19,7 @@ def create_skill():
     try:
         for key in data:
             if data[key] == "":
-                return {'Error': f'Key {key} is empty'}, 400
+                return {'msg': f'Key {key} is empty'}, 400
 
         data['user_id'] = user_identity['id']
 
@@ -61,7 +61,7 @@ def get_skills_by_userId():
         skills = TechSkillModel.query.filter(TechSkillModel.user_id == user_identity).all()
 
     except NoResultFound:
-        return {"Error": "User Not in Database"}, 404
+        return {"msg": "User Not in Database"}, 404
 
     return jsonify(skills), 200
 
@@ -75,7 +75,7 @@ def get_users_by_one_skill(description_like, level_like):
             ).all()
 
     except NoResultFound:
-        return {"Error": "Description or Level Not in Database"}, 404
+        return {"msg": "Description or Level Not in Database"}, 404
 
     return jsonify(skills)
 
@@ -103,7 +103,7 @@ def update_skill(skill_id):
             TechSkillModel.user_id == user_identity,
             TechSkillModel.id == skill_id).first()
 
-        return {"Update": output_update}
+        return jsonify(output_update)
 
     except TypeError as e:
         invalid_keys = e.args[0].split(' ')[0].strip("'")
@@ -127,10 +127,10 @@ def delete_skill(skill_id):
     skill = TechSkillModel.query.get(skill_id)
 
     if not skill:
-        return {"Error": "Skill not found"}, 404
+        return {"msg": "Skill not found"}, 404
 
     TechSkillModel.query.filter(TechSkillModel.id == skill_id).delete()
 
     current_app.db.session.commit()
 
-    return jsonify({'msg': "Skill deleted"}), 204
+    return {'msg': "Skill deleted"}, 204

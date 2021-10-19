@@ -74,9 +74,8 @@ def login():
         if found_user.verify_password(data['password']):
             access_token = create_access_token(identity=found_user)
 
-            return{
-                'message': 'Success Login',
-                'token_bearer': access_token
+            return {
+                'accessToken': access_token
             }, 200
 
         else:
