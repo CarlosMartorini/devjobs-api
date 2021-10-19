@@ -1,3 +1,4 @@
+from sqlalchemy.orm import relationship
 from app.configs.database import db
 from dataclasses import dataclass
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -26,6 +27,13 @@ class UserModel(db.Model):
     linkedinProfile = db.Column(db.String(127), nullable=False)
     address = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(255), nullable=False)
+
+    educations = relationship('EducationModel')
+    experiences = relationship('ExperienceModel')
+    summary = relationship('SummaryModel')
+    otherSkills = relationship('OtherSkillModel')
+    techSkills = relationship('TechSkillModel')
+    messages = relationship('MessageModel')
 
     @property
     def password(self):
