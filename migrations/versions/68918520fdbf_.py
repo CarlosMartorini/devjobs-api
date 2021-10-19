@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 02e8508ffc31
+Revision ID: 68918520fdbf
 Revises: 
-Create Date: 2021-10-19 08:13:07.341236
+Create Date: 2021-10-19 19:52:27.236759
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '02e8508ffc31'
+revision = '68918520fdbf'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,7 +22,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(length=255), nullable=False),
     sa.Column('password_hash', sa.String(length=127), nullable=False),
-    sa.Column('company_name', sa.String(length=255), nullable=False),
+    sa.Column('companyName', sa.String(length=255), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
@@ -30,32 +30,32 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(length=255), nullable=False),
     sa.Column('password_hash', sa.String(length=127), nullable=False),
-    sa.Column('first_name', sa.String(length=255), nullable=False),
-    sa.Column('last_name', sa.String(length=255), nullable=False),
-    sa.Column('birth_date', sa.Date(), nullable=False),
-    sa.Column('linkedin_profile', sa.String(length=127), nullable=False),
+    sa.Column('firstName', sa.String(length=255), nullable=False),
+    sa.Column('lastName', sa.String(length=255), nullable=False),
+    sa.Column('birthDate', sa.Date(), nullable=False),
+    sa.Column('linkedinProfile', sa.String(length=127), nullable=False),
     sa.Column('address', sa.String(length=255), nullable=False),
     sa.Column('phone', sa.String(length=255), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
-    op.create_table('education',
+    op.create_table('educations',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('degree', sa.String(length=255), nullable=False),
     sa.Column('school', sa.String(length=255), nullable=False),
-    sa.Column('date_from', sa.Date(), nullable=True),
-    sa.Column('date_to', sa.Date(), nullable=True),
+    sa.Column('dateFrom', sa.Date(), nullable=True),
+    sa.Column('dateTo', sa.Date(), nullable=True),
     sa.Column('description', sa.Text(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('experience',
+    op.create_table('experiences',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('role', sa.String(length=255), nullable=False),
     sa.Column('company', sa.String(length=255), nullable=False),
-    sa.Column('date_from', sa.Date(), nullable=True),
-    sa.Column('date_to', sa.Date(), nullable=True),
+    sa.Column('dateFrom', sa.Date(), nullable=True),
+    sa.Column('dateTo', sa.Date(), nullable=True),
     sa.Column('description', sa.Text(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
@@ -63,11 +63,11 @@ def upgrade():
     )
     op.create_table('messages',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=True),
-    sa.Column('company_id', sa.Integer(), nullable=True),
+    sa.Column('userId', sa.Integer(), nullable=False),
+    sa.Column('companyId', sa.Integer(), nullable=False),
     sa.Column('message', sa.Text(), nullable=False),
-    sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['companyId'], ['companies.id'], ),
+    sa.ForeignKeyConstraint(['userId'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('others_skills',
@@ -84,7 +84,7 @@ def upgrade():
     sa.Column('city', sa.String(length=255), nullable=False),
     sa.Column('speciality', sa.String(length=255), nullable=False),
     sa.Column('disponibility', sa.String(length=255), nullable=False),
-    sa.Column('experience_time', sa.Integer(), nullable=False),
+    sa.Column('experienceTime', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id'),
@@ -107,8 +107,8 @@ def downgrade():
     op.drop_table('summaries')
     op.drop_table('others_skills')
     op.drop_table('messages')
-    op.drop_table('experience')
-    op.drop_table('education')
+    op.drop_table('experiences')
+    op.drop_table('educations')
     op.drop_table('users')
     op.drop_table('companies')
     # ### end Alembic commands ###
