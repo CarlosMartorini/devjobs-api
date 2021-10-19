@@ -8,7 +8,7 @@ from psycopg2.errors import NotNullViolation, UniqueViolation
 from app.exc.company_exc import InvalidPasswordError
 
 
-VALID_KEYS = ['email', 'company_name', 'password']
+VALID_KEYS = ['email', 'companyName', 'password']
 
 
 def create_company():
@@ -59,7 +59,7 @@ def login():
 
         company.verify_password(data['password'])
 
-        return {"access_token": create_access_token(company)}
+        return {"accessToken": create_access_token(company)}
 
     except InvalidPasswordError as e:
         return {"msg": e.message}, 401
