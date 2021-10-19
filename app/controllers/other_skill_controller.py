@@ -29,20 +29,23 @@ def create_other_skill():
         session.commit()
 
         return jsonify(skill), 201
+
     except TypeError as a:
         invalid_keys = a.args[0].split(' ')[0].strip("'")
 
         return {
             'invalid_keys': invalid_keys,
             'Keys': KEYS
-        }, 401
+        }, 400
+
     except InvalidRequestError as a:
         invalid_keys = a.args[0]
 
         return {
             'invalid_keys': f'The key {invalid_keys} not found',
             'valid_keys': KEYS
-        }, 401
+        }, 400
+
     except IntegrityError as e:
 
         if type(e.orig) == NotNullViolation:

@@ -8,12 +8,13 @@ from app.exc.company_exc import InvalidPasswordError
 
 @dataclass
 class CompanyModel(db.Model):
+    id: int
     email: str
     companyName: str
 
     __tablename__ = 'companies'
 
-    company_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), nullable=False, unique=True)
     password_hash = db.Column(db.String(127), nullable=False)
     companyName = db.Column(db.String(255), nullable=False)

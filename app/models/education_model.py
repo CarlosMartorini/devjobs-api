@@ -48,4 +48,5 @@ class EducationModel(db.Model):
                 "school": new_entry["school"],
                 "dateFrom": new_entry["dateFrom"],
                 "dateTo": new_entry["dateTo"],
-                "description": new_entry["description"]}
+                "description": new_entry["description"]
+        }

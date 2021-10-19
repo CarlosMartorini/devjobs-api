@@ -6,7 +6,8 @@ from . import (
     summary_blueprint,
     company_blueprint,
     tech_skills_blueprint,
-    other_skill_blueprint
+    other_skill_blueprint,
+    message_blueprint
 )
 
 
@@ -20,3 +21,4 @@ api_bp.register_blueprint(education_blueprint.bp)
 api_bp.register_blueprint(experience_blueprint.bp)
 api_bp.register_blueprint(summary_blueprint.bp)
 api_bp.register_blueprint(company_blueprint.bp)
+api_bp.register_blueprint(message_blueprint.bp)
