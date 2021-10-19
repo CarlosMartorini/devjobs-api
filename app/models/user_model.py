@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
+
 @dataclass
 class UserModel(db.Model):
 
@@ -26,6 +27,14 @@ class UserModel(db.Model):
     linkedin_profile = db.Column(db.String(127), nullable=False)
     address = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(255), nullable=False)
+
+    # companies = db.relationship("MessageModel", back_populates="user")
+
+    companies = db.relationship("MessageModel", backref=db.backref('company'))
+    
+
+
+    
 
     @property
     def password(self):

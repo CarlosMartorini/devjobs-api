@@ -6,19 +6,23 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.exc.company_exc import InvalidPasswordError
 
 
+
 @dataclass
 class CompanyModel(db.Model):
-    company_id: int
+    id: int
     email: str
     company_name: str
 
     __tablename__ = 'companies'
 
-    company_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), nullable=False, unique=True)
     password_hash = db.Column(db.String(127), nullable=False)
     company_name = db.Column(db.String(255), nullable=False)
 
+
+    # users = db.relationship("MessageModel", backref=db.backref('user'))
+    
     @property
     def password(self):
         raise AttributeError('Password cannot be accessed')
