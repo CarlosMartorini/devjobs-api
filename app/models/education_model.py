@@ -14,7 +14,7 @@ class EducationModel(db.Model):
     dateTo: str
     description: str
 
-    __tablename__ = "education"
+    __tablename__ = "educations"
 
     id = db.Column(db.Integer, primary_key=True)
     degree = db.Column(db.String(255), nullable=False)

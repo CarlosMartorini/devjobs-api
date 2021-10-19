@@ -15,7 +15,7 @@ class ExperienceModel(db.Model):
     dateTo: str
     description: str
 
-    __tablename__ = "experience"
+    __tablename__ = "experiences"
 
     id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(255), nullable=False)
