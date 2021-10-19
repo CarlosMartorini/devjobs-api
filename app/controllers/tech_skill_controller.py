@@ -2,7 +2,7 @@ from flask import request, jsonify, current_app
 from psycopg2.errors import NotNullViolation
 from app.models.tech_skill_model import TechSkillModel
 from sqlalchemy.exc import IntegrityError, InvalidRequestError, NoResultFound
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 
 
 KEYS = [
@@ -13,15 +13,17 @@ KEYS = [
 
 @jwt_required()
 def create_skill():
-    user_identity = get_jwt_identity()
+    user_id = request.args.get('userId')
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
+
     data = request.get_json()
+    data['user_id'] = int(user_id)
 
     try:
         for key in data:
             if data[key] == "":
-                return {'Error': f'Key {key} is empty'}, 400
-
-        data['user_id'] = user_identity['id']
+                return {'msg': f'Key {key} is empty'}, 400
 
         skill = TechSkillModel(**data)
 
@@ -54,14 +56,15 @@ def create_skill():
 
 @jwt_required()
 def get_skills_by_userId():
-    user = get_jwt_identity()
-    user_identity = user['id']
+    user_id = request.args.get('userId')
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
 
     try:
-        skills = TechSkillModel.query.filter(TechSkillModel.user_id == user_identity).all()
+        skills = TechSkillModel.query.filter(TechSkillModel.user_id == int(user_id)).all()
 
     except NoResultFound:
-        return {"Error": "User Not in Database"}, 404
+        return {"msg": "User Not in Database"}, 404
 
     return jsonify(skills), 200
 
@@ -75,7 +78,7 @@ def get_users_by_one_skill(description_like, level_like):
             ).all()
 
     except NoResultFound:
-        return {"Error": "Description or Level Not in Database"}, 404
+        return {"msg": "Description or Level Not in Database"}, 404
 
     return jsonify(skills)
 
@@ -84,14 +87,15 @@ def get_users_by_one_skill(description_like, level_like):
 def update_skill(skill_id):
     session = current_app.db.session
 
-    user = get_jwt_identity()
-    user_identity = user['id']
+    user_id = request.args.get('userId')
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
 
     data = request.get_json()
 
     try:
         is_updated = TechSkillModel.query.filter(
-            TechSkillModel.user_id == user_identity,
+            TechSkillModel.user_id == int(user_id),
             TechSkillModel.id == skill_id).update(data)
 
         if not bool(is_updated):
@@ -100,10 +104,10 @@ def update_skill(skill_id):
         session.commit()
 
         output_update = TechSkillModel.query.filter(
-            TechSkillModel.user_id == user_identity,
+            TechSkillModel.user_id == int(user_id),
             TechSkillModel.id == skill_id).first()
 
-        return {"Update": output_update}
+        return jsonify(output_update)
 
     except TypeError as e:
         invalid_keys = e.args[0].split(' ')[0].strip("'")
@@ -114,10 +118,9 @@ def update_skill(skill_id):
         }
     except InvalidRequestError as e:
         doble_quote = '"'
-        single_quote = "'"
-        invalid_key = e.args[0].split(' ')[-1].replace(doble_quote, single_quote)
+        invalid_key = e.args[0].split(' ')[-1].replace(doble_quote, '')
         return {
-            'invalid_keys': f'The key {invalid_key} not found',
+            'invalid_keys': {invalid_key},
             'valid_keys': KEYS
         }, 401
 
@@ -127,10 +130,10 @@ def delete_skill(skill_id):
     skill = TechSkillModel.query.get(skill_id)
 
     if not skill:
-        return {"Error": "Skill not found"}, 404
+        return {"msg": "Skill not found"}, 404
 
     TechSkillModel.query.filter(TechSkillModel.id == skill_id).delete()
 
     current_app.db.session.commit()
 
-    return jsonify({'msg': "Skill deleted"}), 204
+    return {'msg': "Skill deleted"}, 204

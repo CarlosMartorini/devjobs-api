@@ -2,7 +2,7 @@ from flask import request, jsonify, current_app
 from psycopg2.errors import NotNullViolation
 from app.models.other_skill_model import OtherSkillModel
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 
 
 KEYS = ['description', 'level']
@@ -10,15 +10,17 @@ KEYS = ['description', 'level']
 
 @jwt_required()
 def create_other_skill():
-    user_identity = get_jwt_identity()
+    user_id = request.args.get('userId')
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
+
     data = request.get_json()
+    data['user_id'] = int(user_id)
 
     try:
         for key in data:
             if data[key] == "":
-                return {'Error': f'Key {key} is empty'}, 400
-
-        data['user_id'] = user_identity['id']
+                return {'msg': f'Key {key} is empty'}, 400
 
         skill = OtherSkillModel(**data)
 
@@ -52,10 +54,11 @@ def create_other_skill():
 
 @jwt_required()
 def get_others_skills_by_user():
-    user = get_jwt_identity()
-    user_identity = user['id']
+    user_id = request.args.get('userId')
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
 
-    skills = OtherSkillModel.query.filter(OtherSkillModel.user_id == user_identity).all()
+    skills = OtherSkillModel.query.filter(OtherSkillModel.user_id == int(user_id)).all()
 
     return jsonify(skills), 200
 
@@ -74,14 +77,15 @@ def get_by_other_skill(description_like, level_like):
 def update_other_skill(skill_id):
     session = current_app.db.session
 
-    user = get_jwt_identity()
-    user_identity = user['id']
+    user_id = request.args.get('userId')
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
 
     data = request.get_json()
 
     try:
         is_updated = OtherSkillModel.query.filter(
-            (OtherSkillModel.user_id == user_identity), (OtherSkillModel.id == skill_id)
+            (OtherSkillModel.user_id == int(user_id)), (OtherSkillModel.id == skill_id)
         ).update(data)
 
         if not bool(is_updated):
@@ -90,23 +94,23 @@ def update_other_skill(skill_id):
         session.commit()
 
         output_update = OtherSkillModel.query.filter(
-            (OtherSkillModel.user_id == user_identity), (OtherSkillModel.id == skill_id)
+            (OtherSkillModel.user_id == int(user_id)), (OtherSkillModel.id == skill_id)
         ).first()
 
-        return {"Update": output_update}, 200
+        return jsonify(output_update), 200
 
     except TypeError as a:
         invalid_keys = a.args[0].split(' ')[0].strip("'")
 
         return {
             'invalid_keys': invalid_keys,
-            'Keys': KEYS
+            'valid_keys': KEYS
         }
     except InvalidRequestError as a:
         invalid_keys = a.args[0].split(' ')[-1].strip("'").replace('"', "")
 
         return {
-            'invalid_keys': f'The key {invalid_keys} not found',
+            'invalid_key': invalid_keys,
             'valid_keys': KEYS
         }, 401
 
@@ -116,7 +120,7 @@ def delete_other_skill(skill_id):
     skill = OtherSkillModel.query.get(skill_id)
 
     if not skill:
-        return {"Error": "Skill not found"}, 404
+        return {"msg": "Skill not found"}, 404
 
     OtherSkillModel.query.filter(OtherSkillModel.id == skill_id).delete()
 

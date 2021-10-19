@@ -18,15 +18,18 @@ VALID_KEYS = [
 def get_experience():
 
     try:
-        user_id = int(request.args.get('userId'))
+        user_id = request.args.get('userId')
 
-        experience = EXM.query.filter(EXM.user_id == user_id).all()
+        if not user_id:
+            return {"msg": "Argument userId is required"}, 400
+
+        experience = EXM.query.filter(EXM.user_id == int(user_id)).all()
 
     except NoResultFound:
-        return {"error": "User Not in Database"}, 404
+        return {"msg": "User Not in Database"}, 404
 
     except TypeError:
-        return {"error": "Argument userId not found"}, 400
+        return {"msg": "Argument userId not found"}, 400
 
     return jsonify(experience), 200
 
@@ -34,7 +37,12 @@ def get_experience():
 @jwt_required()
 def create_experience():
 
+    user_id = request.args.get('userId')
     data = request.get_json()
+
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
+    data["userId"] = int(user_id)
 
     try:
         data["dateFrom"]
@@ -70,7 +78,7 @@ def delete_experience(experience_id):
     experience = EXM.query.get(experience_id)
 
     if not experience:
-        return {"error": "Experience not found"}, 404
+        return {"msg": "Experience not found"}, 404
 
     EXM.query.filter(EXM.id == experience_id).delete()
 

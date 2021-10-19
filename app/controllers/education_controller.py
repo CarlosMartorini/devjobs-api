@@ -24,19 +24,23 @@ def get_education():
         education = EM.query.filter(EM.user_id == user_id).all()
 
     except NoResultFound:
-        return {"error": "User Not in Database"}, 404
+        return {"msg": "User Not in Database"}, 404
 
     except TypeError:
-        return {"error": "Argument userId not found"}, 400
+        return {"msg": "Argument userId not found"}, 400
 
     return jsonify(education), 200
 
 
 @jwt_required()
 def create_education():
-
+    user_id = request.args.get('userId')
     data = request.get_json()
 
+    if not user_id:
+        return {"msg": "Argument userId is required"}, 400
+
+    data["userId"] = int(user_id)
     try:
         data["dateFrom"]
 
@@ -71,7 +75,7 @@ def delete_education(education_id):
     education = EM.query.get(education_id)
 
     if not education:
-        return {"error": "Education not found"}, 404
+        return {"msg": "Education not found"}, 404
 
     EM.query.filter(EM.id == education_id).delete()
 
