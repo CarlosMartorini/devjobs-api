@@ -51,10 +51,11 @@ def get_user_messages():
     messages = db.session.query(MessageModel, CompanyModel).select_from(MessageModel).join(CompanyModel).filter(MessageModel.userId == int(userId)).all() # noqa
 
     list_messages = [{
+        "id": message[0].id,
         "message": message[0].message,
         "companyName": message[1].companyName,
-        "userId": message[0].user_id,
-        "CompanyId": message[0].company_id
+        "userId": message[0].userId,
+        "CompanyId": message[0].companyId
     } for message in messages]
 
     return jsonify(list_messages), 200
