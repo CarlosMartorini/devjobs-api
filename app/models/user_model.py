@@ -30,7 +30,7 @@ class UserModel(db.Model):
 
     educations = relationship('EducationModel')
     experiences = relationship('ExperienceModel')
-    summary = relationship('SummaryModel')
+    summary = relationship('SummaryModel', uselist=False)
     otherSkills = relationship('OtherSkillModel')
     techSkills = relationship('TechSkillModel')
     messages = relationship('MessageModel')
