@@ -1,8 +1,11 @@
 from flask import request, jsonify, current_app
 from psycopg2.errors import NotNullViolation
+from app.models.summary_model import SummaryModel
 from app.models.tech_skill_model import TechSkillModel
+from app.models.user_model import UserModel
 from sqlalchemy.exc import IntegrityError, InvalidRequestError, NoResultFound
 from flask_jwt_extended import jwt_required
+from app.configs.database import db
 
 
 KEYS = [
@@ -73,17 +76,41 @@ def get_skills_by_userId():
 
 
 @jwt_required()
-def get_users_by_one_skill(description_like, level_like):
+def get_users_by_one_skill(description, level):
 
     try:
-        skills = TechSkillModel.query.filter(
-                TechSkillModel.description == description_like, TechSkillModel.level == level_like
-            ).all()
+        # skills = TechSkillModel.query.filter(
+        #         TechSkillModel.description == description_like, TechSkillModel.level == level_like
+        #     ).all()
+
+        skills = db.session.query(UserModel, TechSkillModel)\
+            .select_from(TechSkillModel)\
+            .join(UserModel)\
+            .filter(TechSkillModel.description == description, TechSkillModel.level == level)\
+            .all()
+            # .join(SummaryModel)\
+        
+        print(skills)
+
+        list_skills = [{
+            "description": skill[1].description,
+            "level": skill[1].level,
+            # "user": f'{skill[0].firstName} {skill[0].lastName}',
+            "firstName": skill[0].firstName,
+            "lastName": skill[0].lastName,
+            "userId": skill[0].id,
+            "phone": skill[0].phone,
+            "address": skill[0].address,
+            "linkedinProfile": skill[0].linkedinProfile,
+            "email": skill[0].email,
+            "birthDate": skill[0].birthDate,
+            "objective": skill[0].summary.objective
+        } for skill in skills]
 
     except NoResultFound:
         return {"msg": "Description or Level Not in Database"}, 404
 
-    return jsonify(skills)
+    return jsonify(list_skills)
 
 
 @jwt_required()
