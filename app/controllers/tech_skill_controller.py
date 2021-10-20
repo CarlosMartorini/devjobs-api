@@ -79,23 +79,15 @@ def get_skills_by_userId():
 def get_users_by_one_skill(description, level):
 
     try:
-        # skills = TechSkillModel.query.filter(
-        #         TechSkillModel.description == description_like, TechSkillModel.level == level_like
-        #     ).all()
-
         skills = db.session.query(UserModel, TechSkillModel)\
             .select_from(TechSkillModel)\
             .join(UserModel)\
             .filter(TechSkillModel.description == description, TechSkillModel.level == level)\
             .all()
-            # .join(SummaryModel)\
-        
-        print(skills)
 
         list_skills = [{
             "description": skill[1].description,
             "level": skill[1].level,
-            # "user": f'{skill[0].firstName} {skill[0].lastName}',
             "firstName": skill[0].firstName,
             "lastName": skill[0].lastName,
             "userId": skill[0].id,
